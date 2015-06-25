@@ -21,6 +21,8 @@
 # Text after the hyphen is interpreted as arguments to Arduino's --board param:
 # https://github.com/arduino/Arduino/blob/ide-1.5.x/build/shared/manpage.adoc
 #
+# If there are no configs detected, it will just use the file as-is with Uno.
+#
 # We read in the specified ino file, make modification, and write it back out,
 # to the same file. This avoid issues with relative paths and stuff like that.
 #
@@ -75,6 +77,15 @@ def RunAllConfigs( ino ):
 
         return modified, board
 
+    def VerifyWithArduino(board, ino):
+        args = [ARDUINO, "--verify", "--board", board, ino]
+        print " ".join(args)
+        retcode = subprocess.call(args)
+        if retcode != 0:
+            print "Error while running Arduino, exiting"
+            sys.exit(1)
+
+
     # Read in original sketch file
     with open(ino, "r") as fid:
         original = fid.readlines()
@@ -88,30 +99,31 @@ def RunAllConfigs( ino ):
             num_config_sets = max(num_config_sets, config_set)
     print "Found %d config sets" % num_config_sets
 
-    # We really, really don't want to mess up the original file on disc
-    try:
-        for ii in range(1, num_config_sets + 1):
-            x = "===== Processing config set %d " % ii
-            x += "=" * (80 - len(x))
-            print x
-            modified, board = EnableConfigSet( original, ii )
+    if num_config_sets == 0:
+        # No config sets detected, use file as-is with Arduino Uno
+        x = "===== Processing file as-is for arduino:avr:uno "
+        x += "=" * (80 - len(x))
+        print x
+        VerifyWithArduino("arduino:avr:uno", ino)
+    else:
+        # We really, really don't want to mess up the original file on disc
+        try:
+            for ii in range(1, num_config_sets + 1):
+                x = "===== Processing config set %d " % ii
+                x += "=" * (80 - len(x))
+                print x
+                modified, board = EnableConfigSet( original, ii )
+                with open(ino, "w") as fid:
+                    fid.write("".join(modified))
+                VerifyWithArduino(board, ino)
+        finally:
+            # restore the original file
+            print "Restoring original sketch file"
             with open(ino, "w") as fid:
-                fid.write("".join(modified))
-            #try:
-            args = [ARDUINO, "--verify", "--board", board, ino]
-            print " ".join(args)
-            retcode = subprocess.call(args)
-            if retcode != 0:
-                print "Error while running Arduino, exiting"
-                sys.exit(1)
-
-    finally:
-        # restore the original file
-        print "Restoring original sketch file"
-        with open(ino, "w") as fid:
-            fid.write("".join(original))
+                fid.write("".join(original))
 
 
+# TODO make this only iterate over files in examples/*/ that end in .ino
 for subdir, dirs, files in os.walk("examples"):
     for f in files:
         RunAllConfigs( os.path.join(subdir, f) )
