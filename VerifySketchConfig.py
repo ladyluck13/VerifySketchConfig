@@ -101,6 +101,8 @@ def RunAllConfigs( ino ):
 
     if num_config_sets == 0:
         # No config sets detected, use file as-is with Arduino Uno
+        # TODO add support for a "Config default: arduino:avr:uno" line
+        #   that would let us specify on a per-file basis how to run it.
         x = "===== Processing file as-is for arduino:avr:uno "
         x += "=" * (80 - len(x))
         print x
