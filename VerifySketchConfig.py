@@ -40,9 +40,6 @@ import os
 import subprocess
 import re
 
-# Update this variable to point to your Arduino binary
-ARDUINO = "/home/matthew/bin/arduino"
-
 def RunAllConfigs( ino ):
 
     RE_CONFIG = "^// Config (\d+) - (.*)$"
@@ -124,12 +121,33 @@ def RunAllConfigs( ino ):
             with open(ino, "w") as fid:
                 fid.write("".join(original))
 
+if __name__ == "__main__":
 
-# TODO make this only iterate over files in examples/*/ that end in .ino
-for subdir, dirs, files in os.walk("examples"):
-    for f in files:
-        RunAllConfigs( os.path.join(subdir, f) )
+    if len(sys.argv) < 2:
+        if sys.platform == "darwin":
+            ARDUINO = "/Applications/Arduino.app/Contents/MacOS/Arduino"
+        elif os.name == "posix":
+            ARDUINO = "/usr/bin/arduino"
+        else:
+            ARDUINO = "C:\Program Files (x86)\Arduino\arduino.exe"
 
-# Return good status if we don't exit(1) early
-sys.exit(0)
+        if not os.path.exists(ARDUINO):
+            print """
+Couldn't find arduino binary.  Please specify.  Example:
 
+./VerifySketchConfig.py /path/to/arduino
+"""
+            sys.exit(1)
+    else:
+        ARDUINO = sys.argv[1].trim()
+        if not os.path.exists(ARDUINO):
+            print "Invalid path to arduino binary"
+            sys.exit(1)
+
+    try:
+        for subdir, dirs, files in os.walk("examples"):
+            for f in [os.path.abspath(os.path.join(subdir, file)) for file in files if file[-3:].lower() == "ino"]:
+                RunAllConfigs(f)
+    except IOError:
+        print "Run this command from a directory with an examples/ subdirectory"
+        sys.exit(1)
