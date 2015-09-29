@@ -26,9 +26,11 @@ A tool to verify all configurations of Arduino library examples
 # We read in the specified ino file, make modification, and write it back out,
 # to the same file. This avoid issues with relative paths and stuff like that.
 #
-# Usage: VerifySketchConfig.py
+# Usage: VerifySketchConfig.py [/path/to/arduino]
 # Iterates through ./examples/* to build them all, so call it from your
-# Arduino library's top-level directory. It looks in ./examples/*
+#     Arduino library's top-level directory. It looks in ./examples/* for
+#     files ending in .ino.
+# You can optionally specify the path to your arduino executable.
 #
 # Written by Matthew Beckler and Adam Wolf, for Wayne and Layne, LLC.
 # Released under terms of the GPL version 2.
