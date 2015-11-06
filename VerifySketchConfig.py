@@ -141,7 +141,7 @@ Couldn't find arduino binary.  Please specify.  Example:
 """
             sys.exit(1)
     else:
-        ARDUINO = sys.argv[1].trim()
+        ARDUINO = sys.argv[1].strip()
         if not os.path.exists(ARDUINO):
             print "Invalid path to arduino binary"
             sys.exit(1)
