@@ -1,6 +1,8 @@
 # VerifySketchConfig
 A tool to verify all configurations of Arduino library examples
 
+To download. click the "Download ZIP" button on the right side of this page. Rename the uncompressed folder "VerifySketchConfig".
+
 ```
 # A script to verify all example sketches using the Arduino
 # command line --verify option.
@@ -16,6 +18,7 @@ A tool to verify all configurations of Arduino library examples
 # // More lines of commented-out code
 # // Config end
 # (Ignore the leading "# " on the four lines above.)
+#
 # This script will parse the sketch file and determine how many config sets
 # are present in the file. Then it will iterate through each config set,
 # make modifications to the file (remove leading spaces and "// " on lines in
