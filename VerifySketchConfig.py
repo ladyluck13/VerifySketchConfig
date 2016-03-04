@@ -9,7 +9,7 @@
 #
 # Conceptually, there are multiple config sets numbered 1 - N. Each config set
 # can be one or more blocks within the code. Each config block looks like:
-# // Config 1 - arduino:avr:uno
+# // Config 1 - WNLCFGBS
 # // Code that is commented-out
 # // More lines of commented-out code
 # // Config end
@@ -18,7 +18,8 @@
 # are present in the file. Then it will iterate through each config set,
 # make modifications to the file (remove leading spaces and "// " on lines in
 # the current config set's block(s) ), and then verify with Arduino.
-# Text after the hyphen is interpreted as arguments to Arduino's --board param:
+# Text after the hyphen is interpreted as a ConfigType, and used with the dict
+# below to look up what to pass as arguments to Arduino's --board param:
 # https://github.com/arduino/Arduino/blob/ide-1.5.x/build/shared/manpage.adoc
 #
 # If there are no configs detected, it will just use the file as-is with Uno.
@@ -41,6 +42,12 @@ import sys
 import os
 import subprocess
 import re
+
+ConfigTypes = {
+    "WNLCFGBS":     "arduino:avr:uno",                  # Bricktronics Shield
+    "WNLCFGBMS":    "arduino:avr:mega:cpu=atmega2560",  # Bricktronics Megashield
+    "WNLCFGNS":     "arduino:avr:uno",                  # Non-shield (Breakout Board or Motor Driver)
+}
 
 def RunAllConfigs( ino ):
 
@@ -72,7 +79,7 @@ def RunAllConfigs( ino ):
                     if config_set == ii:
                         # This is the config set we want, enable it
                         InsideDesiredConfigBlock = True
-                        board = x.group(2)
+                        board = ConfigTypes[x.group(2)]
 
         return modified, board
 
@@ -127,11 +134,11 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         if sys.platform == "darwin":
-            ARDUINO = "/Applications/Arduino.app/Contents/MacOS/Arduino"
+            ARDUINO = r"/Applications/Arduino.app/Contents/MacOS/Arduino"
         elif os.name == "posix":
-            ARDUINO = "/usr/bin/arduino"
+            ARDUINO = r"/usr/bin/arduino"
         else:
-            ARDUINO = "C:\Program Files (x86)\Arduino\arduino.exe"
+            ARDUINO = r"C:\Program Files (x86)\Arduino\arduino.exe"
 
         if not os.path.exists(ARDUINO):
             print """
@@ -153,3 +160,4 @@ Couldn't find arduino binary.  Please specify.  Example:
     except IOError:
         print "Run this command from a directory with an examples/ subdirectory"
         sys.exit(1)
+
