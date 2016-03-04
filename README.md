@@ -13,7 +13,7 @@ To download. click the "Download ZIP" button on the right side of this page. Ren
 #
 # Conceptually, there are multiple config sets numbered 1 - N. Each config set
 # can be one or more blocks within the code. Each config block looks like:
-# // Config 1 - arduino:avr:uno
+# // Config 1 - WNLCFGBS
 # // Code that is commented-out
 # // More lines of commented-out code
 # // Config end
@@ -23,8 +23,8 @@ To download. click the "Download ZIP" button on the right side of this page. Ren
 # are present in the file. Then it will iterate through each config set,
 # make modifications to the file (remove leading spaces and "// " on lines in
 # the current config set's block(s) ), and then verify with Arduino.
-# Text after the hyphen is interpreted as arguments to Arduino's --board param:
-# https://github.com/arduino/Arduino/blob/ide-1.5.x/build/shared/manpage.adoc
+# Text after the hyphen is interpreted as a ConfigType, and used to look up
+# in the code what to pass as arguments to Arduino's --board param:
 #
 # We read in the specified ino file, make modification, and write it back out,
 # to the same file. This avoid issues with relative paths and stuff like that.
@@ -40,3 +40,4 @@ To download. click the "Download ZIP" button on the right side of this page. Ren
 # Contact us if you want to discuss alternate licenses.
 # http://wayneandlayne.com/
 ```
+
