@@ -80,7 +80,11 @@ def RunAllConfigs( ino ):
                     if config_set == ii:
                         # This is the config set we want, enable it
                         InsideDesiredConfigBlock = True
-                        board = ConfigTypes[x.group(2)]
+                        ConfigName = x.group(2)
+                        if ConfigName not in ConfigTypes.keys():
+                            print "Error: Unable to find config type '%s'" % ConfigName
+                            sys.exit(1)
+                        board = ConfigTypes[ConfigName]
 
         return modified, board
 
@@ -107,12 +111,12 @@ def RunAllConfigs( ino ):
     print "Found %d config sets" % num_config_sets
 
     if num_config_sets == 0:
-        x = "===== Processing file as-is for %s " % ConfigTypes[CFG_DEFAULT]
+        x = "===== Processing file as-is for %s " % ConfigTypes["CFG_DEFAULT"]
         x += "=" * (80 - len(x))
         print x
         # TODO add support for a "Config default: arduino:avr:uno" line
         #   that would let us specify on a per-file basis how to run it.
-        VerifyWithArduino(ConfigTypes[CFG_DEFAULT], ino)
+        VerifyWithArduino(ConfigTypes["CFG_DEFAULT"], ino)
     else:
         # We really, really don't want to mess up the original file on disc
         try:
