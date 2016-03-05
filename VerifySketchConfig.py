@@ -44,9 +44,10 @@ import subprocess
 import re
 
 ConfigTypes = {
-    "WNLCFGBS":     "arduino:avr:uno",                  # Bricktronics Shield
-    "WNLCFGBMS":    "arduino:avr:mega:cpu=atmega2560",  # Bricktronics Megashield
-    "WNLCFGNS":     "arduino:avr:uno",                  # Non-shield (Breakout Board or Motor Driver)
+    "CFG_DEFAULT":  "arduino:avr:uno",                  # Default
+    "CFG_WNL_BS":   "arduino:avr:uno",                  # Bricktronics Shield
+    "CFG_WNL_BMS":  "arduino:avr:mega:cpu=atmega2560",  # Bricktronics Megashield
+    "CFG_WNL_NS":   "arduino:avr:uno",                  # Non-shield (Breakout Board or Motor Driver)
 }
 
 def RunAllConfigs( ino ):
@@ -106,13 +107,12 @@ def RunAllConfigs( ino ):
     print "Found %d config sets" % num_config_sets
 
     if num_config_sets == 0:
-        # No config sets detected, use file as-is with Arduino Uno
-        # TODO add support for a "Config default: arduino:avr:uno" line
-        #   that would let us specify on a per-file basis how to run it.
-        x = "===== Processing file as-is for arduino:avr:uno "
+        x = "===== Processing file as-is for %s " % ConfigTypes[CFG_DEFAULT]
         x += "=" * (80 - len(x))
         print x
-        VerifyWithArduino("arduino:avr:uno", ino)
+        # TODO add support for a "Config default: arduino:avr:uno" line
+        #   that would let us specify on a per-file basis how to run it.
+        VerifyWithArduino(ConfigTypes[CFG_DEFAULT], ino)
     else:
         # We really, really don't want to mess up the original file on disc
         try:
